@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Servidor funcionando</title>
+</head>
+<body>
+    <h1>¡Servidor funcionando!</h1>
+    <h2>Lista de Productos</h2>
+    <ul id="lista"></ul>
+
+    <h3>Agregar Producto</h3>
+    <input type="text" id="nombreProducto" placeholder="Nombre del producto">
+    <button onclick="agregarProducto()">Agregar</button>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        //const socket = io();
+        //const socket = io("http://192.168.56.1:5000"); // IP NITRO VVV
+        const socket = io("http://192.168.56.1:5000", { transports: ["websocket", "polling"] });
+
+        const lista = document.getElementById("lista");
+
+        // Escuchar actualización de productos
+        socket.on("productos", (productos) => {
+            lista.innerHTML = "";
+            productos.forEach(prod => {
+                const li = document.createElement("li");
+                li.innerHTML = `${prod.nombre} 
+                    <button onclick="eliminarProducto(${prod.id})">Eliminar</button>
+                    <button onclick="actualizarProducto(${prod.id})">Actualizar</button>`;
+                lista.appendChild(li);
+            });
+        });
+
+        // Agregar producto
+        function agregarProducto() {
+            const nombre = document.getElementById("nombreProducto").value;
+            if (!nombre) return alert("Ingresa un nombre");
+
+            fetch("/productos", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ id: Date.now(), nombre })
+            }).then(res => res.json())
+              .then(data => console.log(data));
+        }
+
+        // Eliminar producto
+        function eliminarProducto(id) {
+            fetch(`/productos/${id}`, { method: "DELETE" })
+                .then(res => res.json())
+                .then(data => console.log(data));
+        }
+
+        // Actualizar producto
+        function actualizarProducto(id) {
+            const nuevoNombre = prompt("Nuevo nombre del producto:");
+            if (!nuevoNombre) return;
+
+            fetch(`/productos/${id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ nombre: nuevoNombre })
+            }).then(res => res.json())
+              .then(data => console.log(data));
+        }
+    </script>
+</body>
+</html>
+
