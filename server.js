@@ -63,6 +63,7 @@ io.on("connection", (socket) => {
 
 // Iniciar servidor
 const PORT = 5000;
+
 const HOST = "0.0.0.0"; // Acepta conexiones externas
 
 server.listen(PORT, HOST, () => {

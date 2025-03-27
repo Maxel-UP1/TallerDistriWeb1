@@ -18,7 +18,9 @@
     <script>
         //const socket = io();
         //const socket = io("http://192.168.56.1:5000"); // IP NITRO VVV
-        const socket = io("http://192.168.56.1:5000", { transports: ["websocket", "polling"] });
+        //const socket = io("http://192.168.56.1:5000", { transports: ["websocket", "polling"] });
+        const socket = io("/", { transports: ["websocket", "polling"] });
+
 
         const lista = document.getElementById("lista");
 
